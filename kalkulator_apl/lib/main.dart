@@ -18,6 +18,58 @@ class CalculatorAppState extends State<MyApp> {
   final Color _buttonHighlightColor = Colors.blue[100];
   final Color _buttonColorGrey = Colors.grey[500];
 
+  int valueA;
+  int valueB;
+
+  String operator;
+
+  var sbValue = new StringBuffer();
+
+  @override
+  void initState() {
+    sbValue.write("0");
+    operator = "";
+    super.initState();
+  }
+
+  void appendValue(String str) {
+    setState(() {
+      bool doCalculate = false;
+      if (str == "=") {
+        doCalculate = true;
+      } else if (str == "/" || str == "x" || str == "-" || str == "+") {
+        operator = str;
+      }
+      if (!doCalculate) {
+        sbValue.write(str);
+      } else {
+        List<String> values = sbValue.toString().split(operator);
+        if (values.length == 2 &&
+            values[0].isNotEmpty &&
+            values[1].isNotEmpty) {
+          valueA = int.parse(values[0]);
+          valueB = int.parse(values[1]);
+          sbValue.clear();
+          int total = 0;
+          switch (operator) {
+            case "/":
+              total = valueA ~/ valueB;
+              break;
+            case "x":
+              total = valueA * valueB;
+              break;
+            case "-":
+              total = valueA - valueB;
+              break;
+            case "+":
+              total = valueA + valueB;
+          }
+          sbValue.write(total);
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,7 +101,8 @@ class CalculatorAppState extends State<MyApp> {
                   alignment: Alignment.bottomRight,
                   children: [
                     AutoSizeText(
-                      "0",
+                      // "0",
+                      sbValue.toString(),
                       style: Theme.of(context).textTheme.headline3,
                       maxLines: 1,
                     ),
@@ -111,7 +164,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("/");
                             },
                           ),
                         )
@@ -136,7 +189,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("7");
                             },
                           ),
                         ),
@@ -153,7 +206,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("8");
                             },
                           ),
                         ),
@@ -170,7 +223,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("9");
                             },
                           ),
                         ),
@@ -187,7 +240,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("x");
                             },
                           ),
                         ),
@@ -212,7 +265,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("4");
                             },
                           ),
                         ),
@@ -229,7 +282,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("5");
                             },
                           ),
                         ),
@@ -246,7 +299,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("6");
                             },
                           ),
                         ),
@@ -263,7 +316,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("-");
                             },
                           ),
                         ),
@@ -288,7 +341,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("1");
                             },
                           ),
                         ),
@@ -305,7 +358,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("2");
                             },
                           ),
                         ),
@@ -322,7 +375,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("1");
                             },
                           ),
                         ),
@@ -339,7 +392,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("+");
                             },
                           ),
                         ),
@@ -364,7 +417,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("0");
                             },
                           ),
                         ),
@@ -381,7 +434,7 @@ class CalculatorAppState extends State<MyApp> {
                               ),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              appendValue("=");
                             },
                           ),
                         ),
