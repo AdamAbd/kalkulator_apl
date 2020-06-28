@@ -35,12 +35,33 @@ class CalculatorAppState extends State<MyApp> {
   void appendValue(String str) {
     setState(() {
       bool doCalculate = false;
-      if (str == "=") {
+      // jika setelah karakter operator itu tidak boleh ada inputan bilangan 0.
+      String strValue = sbValue.toString();
+      String lastCharacter = strValue.substring(strValue.length - 1);
+      if (str == "0" &&
+          (lastCharacter == "/" ||
+              lastCharacter == "x" ||
+              lastCharacter == "-" ||
+              lastCharacter == "+")) {
+        return;
+      }
+      // jika nilai yang diinput merupakan 0 dan nilai pada widget AutoSizeText juga 0 maka, jangan masukkan nilai tersebut.
+      else if (str == "0" && sbValue.toString() == "0") {
+        return;
+      } else if (str == "=") {
         doCalculate = true;
       } else if (str == "/" || str == "x" || str == "-" || str == "+") {
-        operator = str;
+        if (operator.isEmpty) {
+          operator = str;
+        } else {
+          doCalculate = true;
+        }
       }
       if (!doCalculate) {
+        //  jika ternyata nilai awalnya 0 dan kemudian input bilangan lagi maka, seharusnya nilai 0 tadi kita clear dan masukkan bilangan yang baru.
+        if (sbValue.toString() == "0" && str != "0") {
+          sbValue.clear();
+        }
         sbValue.write(str);
       } else {
         List<String> values = sbValue.toString().split(operator);
@@ -65,18 +86,73 @@ class CalculatorAppState extends State<MyApp> {
               total = valueA + valueB;
           }
           sbValue.write(total);
+          // jika bilangan pertama, operator, dan bilangan kedua sudah terpenuhi lalu si pengguna tap button operator lagi maka, itu akan melakukan perhitungan dan didepannya sudah ditambahkan dengan operator yang terbaru.
+          if (str == "/" || str == "x" || str == "-" || str == "+") {
+            operator = str;
+            sbValue.write(str);
+          } else {
+            operator = "";
+          }
+        } // kita bisa mengganti-ganti operatornya tanpa perlu hapus karakter terakhir pada operator
+        else {
+          String strValue = sbValue.toString();
+          String lastCharacter = strValue.substring(strValue.length - 1);
+          if (str == "/" || str == "x" || str == "-" || str == "+") {
+            operator = "";
+            sbValue.clear();
+            sbValue
+                .write(strValue.substring(0, strValue.length - 1) + "" + str);
+            operator = str;
+          } // optional
+          // saat sebelum input bilangan kedua lalu tap button "=" maka operator dihapus
+          else if (str == "=" &&
+              (lastCharacter == "/" ||
+                  lastCharacter == "x" ||
+                  lastCharacter == "-" ||
+                  lastCharacter == "+")) {
+            operator = "";
+            sbValue.clear();
+            sbValue.write(strValue.substring(0, strValue.length - 1));
+          }
         }
       }
+    });
+  }
+
+  void deleteValue() {
+    setState(() {
+      String strValue = sbValue.toString();
+      if (strValue.length > 0) {
+        String lastCharacter = strValue.substring(strValue.length - 1);
+        if (lastCharacter == "/" ||
+            lastCharacter == "x" ||
+            lastCharacter == "-" ||
+            lastCharacter == "+") {
+          operator = "";
+        }
+        strValue = strValue.substring(0, strValue.length - 1);
+        sbValue.clear();
+        sbValue.write(strValue.length == 0 ? "0" : strValue);
+      }
+    });
+  }
+
+  void clearValue() {
+    setState(() {
+      operator = "";
+      sbValue.clear();
+      sbValue.write("0");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kalkulator',
       // The title is used by the device to identify the app for the user. On Android the titles appear above the task manager's app snapshots which are displayed when the user presses the "recent apps" button. On iOS this value cannot be used. CFBundleDisplayName from the app's Info.plist is referred to instead whenever present, CFBundleName otherwise. To provide a localized title instead, use [onGenerateTitle].
       // In "Flutter for Web", it's used in browser-tabs, which corresponds to the web app's 'title' property.
+      title: 'Kalkulator',
       theme: ThemeData(
+        primarySwatch: _primarySwatchColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: Scaffold(
@@ -89,8 +165,8 @@ class CalculatorAppState extends State<MyApp> {
         body: Column(
           children: [
             Expanded(
-              key: Key("expanded_bagian_atas"),
               // A Key is an identifier for Widgets, Elements and SemanticsNodes.
+              key: Key("expanded_bagian_atas"),
               flex: 1,
               child: Container(
                 key: Key("expanded_container_bagian_atas"),
@@ -133,7 +209,7 @@ class CalculatorAppState extends State<MyApp> {
                                   fontSize: _buttonFontSize),
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              clearValue();
                             },
                           ),
                         ),
@@ -147,7 +223,7 @@ class CalculatorAppState extends State<MyApp> {
                               color: _buttonColorGrey,
                             ),
                             onPressed: () {
-                              // TODO: do something in here
+                              deleteValue();
                             },
                           ),
                         ),
@@ -368,14 +444,14 @@ class CalculatorAppState extends State<MyApp> {
                             color: _buttonColorWhite,
                             highlightColor: _buttonHighlightColor,
                             child: Text(
-                              "1",
+                              "3",
                               style: TextStyle(
                                 color: _buttonColorGrey,
                                 fontSize: _buttonFontSize,
                               ),
                             ),
                             onPressed: () {
-                              appendValue("1");
+                              appendValue("3");
                             },
                           ),
                         ),
@@ -443,7 +519,7 @@ class CalculatorAppState extends State<MyApp> {
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
